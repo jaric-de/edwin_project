@@ -17,7 +17,7 @@ class UpdatePtotoIdCollumn extends Migration
             $table->string('photo_id')->nullable()->change();
         });
     }
-git
+
     /**
      * Reverse the migrations.
      *
