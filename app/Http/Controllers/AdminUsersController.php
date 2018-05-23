@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UsersRequest;
+use App\Photo;
 use App\Role;
 use App\User;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\File;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -19,7 +21,7 @@ class AdminUsersController extends Controller
      *
      * @return View
      */
-    public function index():View
+    public function index(): View
     {
         $users = User::all();
         return view('admin.users.index', compact('users'));
@@ -41,14 +43,28 @@ class AdminUsersController extends Controller
      * @param UsersRequest $request
      * @return RedirectResponse
      */
-    public function store(UsersRequest $request):RedirectResponse
+    public function store(UsersRequest $request): RedirectResponse
     {
+        $photo_id = null;
+        if ($request->hasFile('photo_id')) {
+            $file = $request->file('photo_id');
+            $name = str_replace(" ", "", time() . '_' . $file->getClientOriginalName());
+            $file->move('images', $name);
+
+            $photo = Photo::create([
+                'file' => $name
+            ]);
+            $photo_id = $photo->id;
+        }
+//        $test = \request('name');
+
         User::create([
-            'role_id'   => \request('role_id'),
-            'is_active' => \request('is_active'),
-            'name'      => \request('name'),
-            'email'     => \request('email'),
-            'password'  => bcrypt(\request('password'))
+            'role_id'   => $request['role_id'],
+            'is_active' => $request['is_active'],
+            'name'      => $request['name'],
+            'email'     => $request['email'],
+            'password'  => bcrypt($request['password']),
+            'photo_id'  => $photo_id
         ]);
 
         return redirect(route('users.index'));
