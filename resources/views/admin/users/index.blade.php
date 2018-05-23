@@ -7,6 +7,8 @@
             <th>Id</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Role</th>
+            <th>Status</th>
             <th>Created at</th>
             <th>Updated at</th>
         </tr>
@@ -18,6 +20,12 @@
                     <td>{{ $user->id }}</td>
                     <td>{{ $user->name }}</td>
                     <td>{{ $user->email }}</td>
+                    <td>{{ $user->role->name }}</td>
+                    <td>
+                        {!!$user->is_active ?
+                        '<i class="fas fa-check-circle" style="margin-left: 15px"></i>' :
+                         '<i class="fas fa-times-circle" style="margin-left: 15px"></i>' !!}
+                    </td>
                     <td>{{ $user->created_at->diffForHumans() }}</td>
                     <td>{{ $user->updated_at->diffForHumans() }}</td>
                 </tr>

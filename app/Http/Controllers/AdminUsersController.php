@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UsersRequest;
+use App\Role;
 use App\User;
 use Illuminate\Contracts\View\Factory;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 
 class AdminUsersController extends Controller
@@ -22,24 +26,32 @@ class AdminUsersController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     *
-     * @return Response
+     * @return Factory|View
      */
     public function create()
     {
-        //
+        $roles = Role::all()->pluck('name', 'id')->toArray();
+
+        return view('admin.users.create', compact('roles'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return Response
+     * @param UsersRequest $request
+     * @return RedirectResponse
      */
-    public function store(Request $request)
+    public function store(UsersRequest $request):RedirectResponse
     {
-        //
+        User::create([
+            'role_id'   => \request('role_id'),
+            'is_active' => \request('is_active'),
+            'name'      => \request('name'),
+            'email'     => \request('email'),
+            'password'  => bcrypt(\request('password'))
+        ]);
+
+        return redirect(route('users.index'));
     }
 
     /**
