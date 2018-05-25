@@ -6,6 +6,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
+/**
+ * Class User
+ *
+ * @property $created_at_for_humans
+ *
+ * @package App
+ */
 class User extends Authenticatable
 {
     use Notifiable;
@@ -36,8 +43,29 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    /**
+     * @return BelongsTo
+     */
     public function photo()
     {
         return $this->belongsTo(Photo::class );
+    }
+
+    /**
+     * Just example for accessor
+     *
+     * @return string
+     */
+    public function getCreatedAtForHumansAttribute(): string
+    {
+        return $this->created_at->diffForHumans();
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setPasswordAttribute(string $value): void
+    {
+        $this->attributes['password'] = bcrypt($value);
     }
 }

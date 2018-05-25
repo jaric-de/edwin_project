@@ -3,15 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\UsersRequest;
+use App\Http\Requests\UserUpdateForm;
 use App\Photo;
 use App\Role;
 use App\User;
 use Illuminate\Contracts\View\Factory;
-use Illuminate\Http\File;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Routing\Redirector;
 use Illuminate\View\View;
 
 class AdminUsersController extends Controller
@@ -46,6 +44,7 @@ class AdminUsersController extends Controller
     public function store(UsersRequest $request): RedirectResponse
     {
         $photo_id = null;
+        $inputData = $request->all();
         if ($request->hasFile('photo_id')) {
             $file = $request->file('photo_id');
             $name = str_replace(" ", "", time() . '_' . $file->getClientOriginalName());
@@ -56,16 +55,22 @@ class AdminUsersController extends Controller
             ]);
             $photo_id = $photo->id;
         }
-//        $test = \request('name');
+//        $test = \request('name'); // на таком обращении валился скрипт, так, как внутри в одном из элементов массива лежал путь на временный файл, который стерся после move().
 
-        User::create([
-            'role_id'   => $request['role_id'],
-            'is_active' => $request['is_active'],
-            'name'      => $request['name'],
-            'email'     => $request['email'],
-            'password'  => bcrypt($request['password']),
-            'photo_id'  => $photo_id
-        ]);
+        $inputData['photo_id'] = $photo_id;
+
+        User::create($inputData);
+
+//        User::create([
+//            'role_id'   => $request->get('role_id'),
+//            'is_active' => $request['is_active'],
+//            'name'      => $request['name'],
+//            'email'     => $request['email'],
+//            'password'  => $request['password'],
+//            'photo_id'  => $photo_id,
+//        ]);
+
+//        $user->cretaed_at_for_humans,
 
         return redirect(route('users.index'));
     }
@@ -84,24 +89,47 @@ class AdminUsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
-     * @return Response
+     * @param $id
+     * @return View
      */
     public function edit($id)
     {
-        //
+        $user = User::findOrFail($id);
+        $roles = Role::all()->pluck('name', 'id')->toArray();
+
+        return view('admin.users.edit', compact(['roles', 'user']));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return Response
+     * @param UserUpdateForm $request
+     * @param $id
+     * @return RedirectResponse
      */
-    public function update(Request $request, $id)
+    public function update(UserUpdateForm $request, $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $inputData = $request->all();
+
+        $photoId = null;
+
+        if ($request->hasFile('photo_id')) {
+            $file = $request->file('photo_id');
+            $name = str_replace(" ", "", time() . '_' . $file->getClientOriginalName());
+            $file->move('images', $name);
+
+            $photo = Photo::create([
+                'file' => $name
+            ]);
+            $photoId = $photo->id;
+        }
+
+        $inputData['photo_id'] = $photoId;
+
+        $user->update($inputData);
+
+        return redirect(route('users.index'));
     }
 
     /**
