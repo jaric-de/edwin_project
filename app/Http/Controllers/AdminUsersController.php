@@ -10,6 +10,7 @@ use App\User;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
 
 class AdminUsersController extends Controller
@@ -129,7 +130,9 @@ class AdminUsersController extends Controller
 
         $user->update($inputData);
 
-        return redirect(route('users.index'));
+//        \Session::flash('success_message', 'Suck it');
+
+        return redirect(route('users.index'))->with('success_message', 'User was updated');
     }
 
     /**
@@ -140,6 +143,12 @@ class AdminUsersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $user = User::findOrFail($id);
+
+        unlink(public_path() . $user->photo->file);
+
+        $user->delete();
+
+        return redirect(route('users.index'))->with('success_message', 'User was deleted');
     }
 }

@@ -1,5 +1,12 @@
 @extends('layouts.admin')
 @section('content')
+    @if (session('success_message'))
+        <div class="alert alert-success alert-dismissible" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong>Well done!</strong> {{ session('success_message') }}
+        </div>
+    @endif
+
     <h1>Users</h1>
     <table class="table">
         <thead>

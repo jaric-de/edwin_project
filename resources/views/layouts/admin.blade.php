@@ -70,8 +70,10 @@
                     <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
                     </li>
                     <li class="divider"></li>
-                    <li><a href="{{--{{ url('/logout') }}--}}"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                    </li>
+                    <li><a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                        @csrf
+                    </form>
                 </ul>
                 <!-- /.dropdown-user -->
             </li>
@@ -146,15 +148,15 @@
                         <a href="#"><i class="fa fa-wrench fa-fw"></i> Posts<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="{{--{{route('admin.posts.index')}}--}}">All Posts</a>
+                                <a href="{{route('posts.index')}}">All Posts</a>
                             </li>
 
                             <li>
-                                <a href="{{--{{route('admin.posts.create')}}--}}">Create Post</a>
+                                <a href="{{route('posts.create')}}">Create Post</a>
                             </li>
 
                             <li>
-                                <a href="{{--{{route('admin.comments.index')}}--}}">All Comments</a>
+                                <a href="{{--{{route('comments.index')}}--}}">All Comments</a>
                             </li>
 
                         </ul>
