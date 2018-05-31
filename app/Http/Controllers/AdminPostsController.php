@@ -13,6 +13,7 @@ use Illuminate\Routing\Redirector;
 
 class AdminPostsController extends Controller
 {
+    protected $photo_id;
     /**
      * Display a listing of the resource.
      *
@@ -32,9 +33,10 @@ class AdminPostsController extends Controller
      */
     public function create()
     {
+        $post = new Post();
         $categories = Category::pluck('name', 'id')->toArray();
 
-        return view('admin.posts.create', compact('categories'));
+        return view('admin.posts.create', compact(['post', 'categories']));
     }
 
     /**
@@ -84,7 +86,10 @@ class AdminPostsController extends Controller
      */
     public function edit($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        $categories = Category::pluck('name', 'id')->toArray();
+
+        return view('admin.posts.edit', compact(['post', 'categories']));
     }
 
     /**
@@ -96,7 +101,25 @@ class AdminPostsController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $photo_id = 0;
+        $inputData = $request->all();
+
+        if ($request->hasFile('photo_id')) {
+            $file = $request->file('photo_id');
+            $name = str_replace(" ", "", time() . '_' . $file->getClientOriginalName());
+            $file->move('images', $name);
+
+            $photo = Photo::create([
+                'file' => $name
+            ]);
+            $photo_id = $photo->id;
+        }
+
+        $inputData['photo_id'] = $photo_id;
+
+        \Auth::user()->posts()->whereId($id)->first()->update($inputData);
+
+        return redirect(route('posts.index'));
     }
 
     /**
@@ -107,6 +130,11 @@ class AdminPostsController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $post = Post::findOrFail($id);
+        unlink(public_path() . $post->photo->file);
+
+        $post->delete();
+
+        return redirect(route('posts.index'))->with('success_message', 'Post was deleted successfully');
     }
 }

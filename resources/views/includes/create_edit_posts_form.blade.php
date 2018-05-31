@@ -2,7 +2,7 @@
 <div class="col-sm-9">
     <div class="form-group">
         <label for="title">Title</label>
-        <input name="title" type="text" class="form-control" id="title" placeholder="Enter title">
+        <input name="title" type="text" class="form-control" id="title" placeholder="Enter title" value="{{ old('title', $post->title) }}">
     </div>
 
     <div class="form-group">
@@ -10,19 +10,23 @@
         <select name="category_id" class="form-control" id="category_id">
             <option value="" selected disabled>Please select</option>
             @foreach($categories as $key => $value)
-                <option value="{{ $key }}">{{ $value }}</option>
+
+                {{--@if(old('category_id'))--}}
+                    {{--<option {{ $key == old('category_id') ? 'selected' : '' }} value="{{ $key }}">{{ $value }}</option>--}}
+                {{--@else--}}
+                    {{--<option {{ $key == $post->category_id ? 'selected' : '' }} value="{{ $key }}">{{ $value }}</option>--}}
+                {{--@endif--}}
+
+                <option {{ $key == old('category_id', $post->category_id)  ? 'selected' : '' }} value="{{ $key }}">{{ $value }}</option>
+
+                {{--<option {{ $key == $post->category_id ? 'selected' : '' }} value="{{ $key }}">{{ $value }}</option>--}}
             @endforeach
-            {{--<option value="1">PHP</option>--}}
-            {{--<option value="2">Javascript</option>--}}
-            {{--<option value="3">Ruby</option>--}}
-            {{--<option value="3">Python</option>--}}
-            {{--<option value="5">HTML</option>--}}
         </select>
     </div>
 
     <div class="form-group">
         <label for="body">Description</label>
-        <textarea name="body" class="form-control" id="body" rows="3"></textarea>
+        <textarea name="body" class="form-control" id="body" rows="3">{{ old('body', $post->body) }}</textarea>
     </div>
 
     <div class="form-group">
