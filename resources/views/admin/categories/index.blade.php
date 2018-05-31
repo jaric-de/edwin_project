@@ -2,15 +2,8 @@
 
 @section('content')
     <h1>Categories</h1>
-    <div class="row">
 
-    </div>
-    @if(session('success_message'))
-        <div class="alert alert-success">
-            {{ session('success_message')}}
-        </div>
-
-    @endif
+    @include('includes._success_message')
 
     <div class="col-sm-6">
         <form method="POST" action="{{ route('categories.store') }}">
@@ -22,7 +15,9 @@
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
         <br/>
+
         @include('includes.form_error')
+
     </div>
     <div class="col-sm-6">
         <table class="table">
@@ -43,16 +38,14 @@
                         <td><a href="{{ route('categories.edit', $category->id) }}">{{ $category->name }}</a></td>
                         <td>{{ $category->created_at->diffForHumans() }}</td>
                         <td>{{ $category->created_at->diffForHumans() }}</td>
-                        <td><a class="form-submit" data-categoryId="{{ route('categories.destroy', $category->id) }}" href="#"><i class="fas fa-trash-alt"></i></a></td>
+                        <td><a class="form-submit" data-instanceId="{{ route('categories.destroy', $category->id) }}" href="#"><i class="fas fa-trash-alt"></i></a></td>
                     </tr>
                 @endforeach
             @endif
             </tbody>
         </table>
 
-        <form id="deleteCategoryForm" action="" method="POST" style="display: none;">
-            {{ csrf_field() }}
-            {{ method_field('delete') }}
-        </form>
+        @include('includes._deleteForm')
+
     </div>
 @endsection
